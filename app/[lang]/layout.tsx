@@ -1,7 +1,20 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Geist, Geist_Mono } from "next/font/google";
+import { lang as getLang } from "next/root-params";
+import "../globals.css";
 
 const locales = ["fr", "en"] as const;
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -37,6 +50,14 @@ export async function generateMetadata({ params }: LayoutProps<'/[lang]'>): Prom
   };
 }
 
-export default function LocaleLayout({ children }: LayoutProps<'/[lang]'>) {
-  return children;
+export default async function LocaleLayout({ children }: LayoutProps<'/[lang]'>) {
+  const locale = await getLang();
+  return (
+    <html
+      lang={locale === "en" ? "en" : "fr"}
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">{children}</body>
+    </html>
+  );
 }
